@@ -6,8 +6,10 @@ from app.core.constants import TABLE_COLUMNS
 from app.core.db import connect, get_settings, set_setting
 from app.core.exporter import export_csv, export_excel
 from app.core.importer import import_workbook
+from app.core.ui import require_login
 
 st.set_page_config(page_title="Pengaturan", layout="wide")
+require_login()
 st.title("Pengaturan")
 db = connect()
 settings = get_settings(db)

@@ -1,9 +1,11 @@
 """Common Streamlit helpers shared by tracker pages."""
 
+import os
 from datetime import date
 
 import pandas as pd
 import streamlit as st
+from streamlit.errors import StreamlitSecretNotFoundError
 
 from app.core.constants import (
     CERTIFICATION_STATUSES,
@@ -16,6 +18,54 @@ from app.core.constants import (
     TABLE_COLUMNS,
 )
 from app.core.db import delete_row, fetch_all, update_row
+
+
+def _email_is_allowed(email: str, allowed_emails: list[str]) -> bool:
+    return email.strip().casefold() in {
+        allowed.strip().casefold() for allowed in allowed_emails if allowed.strip()
+    }
+
+
+def require_login() -> None:
+    if os.environ.get("CYBERSEC_LOCAL_DEV") == "1":
+        st.warning("Mode pengembangan lokal: autentikasi dinonaktifkan.")
+        return
+
+    try:
+        auth = st.secrets["auth"]
+        tracker = st.secrets["tracker"]
+    except (KeyError, StreamlitSecretNotFoundError):
+        st.error(
+            "Aplikasi terkunci: konfigurasi OIDC dan daftar email yang diizinkan "
+            "belum dipasang di Streamlit Secrets."
+        )
+        st.stop()
+
+    required_auth = {
+        "redirect_uri", "cookie_secret", "client_id",
+        "client_secret", "server_metadata_url",
+    }
+    allowed_emails = tracker.get("allowed_emails", [])
+    incomplete_auth = not required_auth.issubset(auth)
+    invalid_allowlist = not isinstance(allowed_emails, list) or not allowed_emails
+    if incomplete_auth or invalid_allowlist:
+        st.error("Konfigurasi login atau daftar akun yang diizinkan belum lengkap.")
+        st.stop()
+
+    if not st.user.is_logged_in:
+        st.title("Cybersec Journey Tracker")
+        st.info("Masuk menggunakan akun Google yang telah diizinkan.")
+        st.button("Masuk dengan Google", on_click=st.login)
+        st.stop()
+
+    email = str(st.user.get("email", ""))
+    if not email or not _email_is_allowed(email, allowed_emails):
+        st.error("Akun ini tidak memiliki akses ke tracker.")
+        st.button("Keluar", on_click=st.logout)
+        st.stop()
+
+    st.sidebar.caption(f"Masuk sebagai {email}")
+    st.sidebar.button("Keluar", on_click=st.logout)
 
 
 def connection():

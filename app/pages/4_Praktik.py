@@ -2,9 +2,10 @@ import streamlit as st
 
 from app.core.constants import PHASES, PRACTICE_LEVELS, PRACTICE_STATUSES
 from app.core.db import fetch_all, upsert_rows
-from app.core.ui import connection, editable_table, load_frame, show_empty_hint
+from app.core.ui import connection, editable_table, load_frame, require_login, show_empty_hint
 
 st.set_page_config(page_title="Praktik", layout="wide")
+require_login()
 st.title("Praktik / Lab")
 db = connection()
 rows = fetch_all(db, "praktik")

@@ -13,6 +13,7 @@ from app.core.metrics import (
     weekly_schedule,
     weighted_progress,
 )
+from app.core.ui import _email_is_allowed
 
 
 def test_weekly_log_totals_and_personal_best():
@@ -104,3 +105,10 @@ def test_weekly_status_upcoming_and_incomplete():
     )
     assert rows[0]["status"] == "Akan datang"
     assert rows[1]["status"] == "Akan datang"
+
+
+def test_email_allowlist_is_case_insensitive_and_exact():
+    allowed = ["User@example.com", "admin@example.com"]
+    assert _email_is_allowed("user@EXAMPLE.com", allowed)
+    assert not _email_is_allowed("user@example.com.attacker.test", allowed)
+    assert not _email_is_allowed("", allowed)

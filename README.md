@@ -1,6 +1,6 @@
 # Cybersec Journey Tracker
 
-A local, single-user Streamlit app for tracking a 52-week cybersecurity learning plan. It stores data in SQLite and works offline.
+A Streamlit app for tracking a 52-week cybersecurity learning plan. It uses SQLite and supports private, single-user access behind Google OpenID Connect (OIDC).
 
 ## Run locally
 
@@ -10,10 +10,25 @@ Requires Python 3.11 or newer.
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
+$env:CYBERSEC_LOCAL_DEV = "1"
 streamlit run app/main.py
 ```
 
-The database is created automatically at `data/tracker.db`. Start date and weekly target default to 5 October 2026 and 12 hours and can be changed on the Pengaturan page. When the database is empty, use that page to import the workbook.
+`CYBERSEC_LOCAL_DEV=1` disables login only for local development. Never set it in Streamlit Community Cloud. Without valid OIDC and allowlist secrets, the app fails closed and does not open the database.
+
+The database is created automatically at `data/tracker.db`. Start date and weekly target default to 5 October 2026 and 12 hours and can be changed on the Pengaturan page.
+
+## Deploy to Streamlit Community Cloud
+
+1. Push this repository to GitHub and create a Google OAuth 2.0 **Web application** client in Google Cloud Console.
+2. In the OAuth client, add the Streamlit app URL as an authorized JavaScript origin, and add `https://YOUR-APP-NAME.streamlit.app/oauth2callback` as an authorized redirect URI.
+3. Deploy this repository on [Streamlit Community Cloud](https://share.streamlit.io/), selecting `main` and `app/main.py`.
+4. In the app's **Settings → Secrets**, copy `.streamlit/secrets.toml.example`, replace every placeholder, and set `tracker.allowed_emails` to the exact Google account email(s) that may access the tracker.
+5. Save the secrets and restart/reboot the app. Verify the login screen, an allowlisted account, and a non-allowlisted account before sharing the public URL.
+
+Keep the OAuth client secret and `cookie_secret` only in the hosting platform's Secrets configuration. Do not commit `.streamlit/secrets.toml`; it is gitignored. OIDC identifies users, while the app's email allowlist controls who can access the data.
+
+**Storage warning:** Community Cloud's local filesystem is not a durable database service. The app currently uses a local SQLite file, so data can be lost when the app is restarted, rebuilt, or moved. Export backups regularly from Pengaturan. For durable private data, use a persistent database before relying on the public deployment.
 
 ## Import and backup
 
@@ -40,7 +55,7 @@ ruff check .
 
 ## Assumptions
 
-- The app is for one local user and has no login, external API, network scanning, or deployment functionality.
+- One local user is the default; OIDC and an explicit email allowlist are required before public deployment.
 - Only one daily log is stored per date. Saving that date replaces its current record.
 - Weekly target hours come from Settings; imported calculated schedule values are intentionally ignored.
 - An absent optional sheet is skipped during import, while a workbook with no recognized sheets is rejected.

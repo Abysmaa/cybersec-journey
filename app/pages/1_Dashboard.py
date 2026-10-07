@@ -13,9 +13,10 @@ from app.core.metrics import (
     streaks,
     weekly_schedule,
 )
-from app.core.ui import connection, show_empty_hint
+from app.core.ui import connection, require_login, show_empty_hint
 
 st.set_page_config(page_title="Dashboard", layout="wide")
+require_login()
 st.title("Dashboard")
 db = connection()
 settings = get_settings(db)

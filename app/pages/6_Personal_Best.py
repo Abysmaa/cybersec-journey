@@ -4,9 +4,10 @@ import streamlit as st
 from app.core.constants import RECORD_DIRECTIONS
 from app.core.db import fetch_all, get_settings, upsert_rows
 from app.core.metrics import manual_record_status, personal_best, weekly_schedule
-from app.core.ui import connection, editable_table
+from app.core.ui import connection, editable_table, require_login
 
 st.set_page_config(page_title="Personal Best", layout="wide")
+require_login()
 st.title("Personal Best")
 db = connection()
 settings = get_settings(db)

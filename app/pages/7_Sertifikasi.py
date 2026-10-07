@@ -2,9 +2,10 @@ import streamlit as st
 
 from app.core.constants import CERTIFICATION_STATUSES
 from app.core.db import fetch_all, upsert_rows
-from app.core.ui import connection, editable_table, load_frame
+from app.core.ui import connection, editable_table, load_frame, require_login
 
 st.set_page_config(page_title="Sertifikasi", layout="wide")
+require_login()
 st.title("Sertifikasi")
 db = connection()
 frame = load_frame(db, "sertifikasi")

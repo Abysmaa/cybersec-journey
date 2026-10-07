@@ -5,9 +5,10 @@ import streamlit as st
 
 from app.core.db import fetch_all, upsert_rows
 from app.core.metrics import streaks
-from app.core.ui import connection, date_input, editable_table
+from app.core.ui import connection, date_input, editable_table, require_login
 
 st.set_page_config(page_title="Log Harian", layout="wide")
+require_login()
 st.title("Log Harian")
 db = connection()
 logs = fetch_all(db, "log_harian")

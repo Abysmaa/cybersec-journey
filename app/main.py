@@ -4,8 +4,10 @@ import streamlit as st
 
 from app.core.db import connect, fetch_all, get_settings
 from app.core.metrics import current_week, streaks
+from app.core.ui import require_login
 
 st.set_page_config(page_title="Cybersec Journey Tracker", page_icon="🛡️", layout="wide")
+require_login()
 
 db = connect()
 settings = get_settings(db)

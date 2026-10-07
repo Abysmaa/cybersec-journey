@@ -2,9 +2,10 @@ import streamlit as st
 
 from app.core.constants import PORTFOLIO_STATUSES
 from app.core.db import fetch_all, upsert_rows
-from app.core.ui import connection, editable_table, load_frame
+from app.core.ui import connection, editable_table, load_frame, require_login
 
 st.set_page_config(page_title="Portofolio", layout="wide")
+require_login()
 st.title("Portofolio")
 db = connection()
 rows = fetch_all(db, "portofolio")

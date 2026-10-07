@@ -2,9 +2,10 @@ import streamlit as st
 
 from app.core.constants import MATERIAL_STATUSES, PHASES
 from app.core.db import fetch_all, upsert_rows
-from app.core.ui import connection, editable_table, load_frame, show_empty_hint
+from app.core.ui import connection, editable_table, load_frame, require_login, show_empty_hint
 
 st.set_page_config(page_title="Materi", layout="wide")
+require_login()
 st.title("Materi")
 db = connection()
 rows = fetch_all(db, "materi")

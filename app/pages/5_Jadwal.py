@@ -3,9 +3,10 @@ import streamlit as st
 
 from app.core.db import fetch_all, get_settings, upsert_rows
 from app.core.metrics import current_week, weekly_schedule
-from app.core.ui import connection
+from app.core.ui import connection, require_login
 
 st.set_page_config(page_title="Jadwal", layout="wide")
+require_login()
 st.title("Jadwal Mingguan")
 db = connection()
 settings = get_settings(db)
