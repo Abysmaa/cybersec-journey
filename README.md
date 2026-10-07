@@ -20,11 +20,10 @@ The database is created automatically at `data/tracker.db`. Start date and weekl
 
 ## Deploy to Streamlit Community Cloud
 
-1. Push this repository to GitHub and create a Google OAuth 2.0 **Web application** client in Google Cloud Console.
-2. In the OAuth client, add the Streamlit app URL as an authorized JavaScript origin, and add `https://YOUR-APP-NAME.streamlit.app/oauth2callback` as an authorized redirect URI.
-3. Deploy this repository on [Streamlit Community Cloud](https://share.streamlit.io/), selecting `main` and `app/main.py`.
-4. In the app's **Settings → Secrets**, copy `.streamlit/secrets.toml.example`, replace every placeholder, and set `tracker.allowed_emails` to the exact Google account email(s) that may access the tracker.
-5. Save the secrets and restart/reboot the app. Verify the login screen, an allowlisted account, and a non-allowlisted account before sharing the public URL.
+1. Push this repository to GitHub, sign in to [Streamlit Community Cloud](https://share.streamlit.io/), and deploy the `main` branch with `app/main.py`. The app remains locked until authentication is configured.
+2. Note the app URL assigned by Streamlit, then create a Google OAuth 2.0 **Web application** client in Google Cloud Console. Add the app URL as an authorized JavaScript origin, and add `<APP-URL>/oauth2callback` as an authorized redirect URI.
+3. In the app's **Settings → Secrets**, copy `.streamlit/secrets.toml.example`, replace every placeholder, and set `tracker.allowed_emails` to the exact Google account email(s) that may access the tracker.
+4. Save the secrets and restart/reboot the app. Verify the login screen, an allowlisted account, and a non-allowlisted account before sharing the public URL.
 
 Keep the OAuth client secret and `cookie_secret` only in the hosting platform's Secrets configuration. Do not commit `.streamlit/secrets.toml`; it is gitignored. OIDC identifies users, while the app's email allowlist controls who can access the data.
 
